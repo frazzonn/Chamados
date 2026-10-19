@@ -7,11 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+
 @Entity
-@Table(name="clientes")
+@Table(name = "clientes")
 public class Cliente {
-    
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -24,19 +25,21 @@ public class Cliente {
     @Column(length = 20)
     private String telefone;
 
-    public Cliente(){}
-
-    public Cliente(String nome, String email, String telefone){
-        this.nome=nome;
-        this.email=email;
-        this.telefone=telefone;
+    public Cliente() {
     }
 
-    public Long getId(){return id;}
-    public String getNome(){return nome;}
-    public void setNome(String nome){this.nome=nome;}
-    public String getEmail(){return email;}
-    public void setEmail(String email){this.email = email;}
-    public String getTelefone(){return telefone;}
-    public void setTelefone(String telefone){this.telefone = telefone;}
+    public Cliente(String nome, String email, String telefone) {
+        this.nome = nome;
+        this.email = email;
+        this.telefone = telefone;
+    }
+
+    public Long getId() { return id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
 }
+
