@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chamados</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="topo">
+    <a href="#/" class="marca">Chamados</a>
+    <nav>
+      <a href="#/" data-rota="dashboard">Dashboard</a>
+      <a href="#/chamados" data-rota="chamados">Chamados</a>
+      <a href="#/clientes" data-rota="clientes">Clientes</a>
+      <a href="#/categorias" data-rota="categorias">Categorias</a>
+      <a href="#/tecnicos" data-rota="tecnicos">Técnicos</a>
+    </nav>
+  </header>
+
+  <main id="app"></main>
+  <div id="aviso" class="aviso" hidden></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/clientes.js"></script>
+  <script src="js/categorias.js"></script>
+  <script src="js/rotas.js"></script>
+</body>
+</html>
