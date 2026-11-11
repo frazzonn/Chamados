@@ -88,6 +88,7 @@ async function telaClientesDetalhe(id) {
       <h1>${esc(c.nome)}</h1>
       <div class="linha-botoes" style="margin:0">
         <a class="botao" href="#/clientes">Voltar</a>
+        <a class="botao" href="#/chamados?clienteId=${c.id}">Chamados do cliente</a>
         <a class="botao primario" href="#/clientes/${c.id}/editar">Editar</a>
       </div>
     </div>

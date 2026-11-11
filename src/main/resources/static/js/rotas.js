@@ -6,10 +6,18 @@ const rotas = [
   [/^\/clientes\/(\d+)\/editar$/, (m) => telaClientesForm(m[1])],
   [/^\/categorias$/, () => telaCategorias(null)],
   [/^\/categorias\/(\d+)\/editar$/, (m) => telaCategorias(m[1])],
+  [/^\/tecnicos$/, () => telaTecnicos(null)],
+  [/^\/tecnicos\/(\d+)\/editar$/, (m) => telaTecnicos(m[1])],
+  [/^\/chamados$/, (m, params) => telaChamadosLista(params)],
+  [/^\/chamados\/novo$/, (m, params) => telaChamadosNovo(params)],
 ];
 
 async function navegar() {
-  const caminho = location.hash.replace(/^#/, "") || "/";
+  const [caminhoBruto, consulta = ""] = location.hash
+    .replace(/^#/, "")
+    .split("?");
+  const caminho = caminhoBruto || "/";
+  const params = new URLSearchParams(consulta);
 
   const secao = caminho.split("/")[1] || "dashboard";
   document
@@ -20,7 +28,7 @@ async function navegar() {
     const m = caminho.match(padrao);
     if (m) {
       try {
-        await tela(m);
+        await tela(m, params);
       } catch (e) {
         app.innerHTML = `<div class="card">${esc(e.message)}</div>`;
       }
