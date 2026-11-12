@@ -1,5 +1,5 @@
 const rotas = [
-  [/^\/?$/, () => (location.hash = "#/clientes")],
+  [/^\/?$/, () => telaDashboard()],
   [/^\/clientes$/, () => telaClientesLista()],
   [/^\/clientes\/novo$/, () => telaClientesForm(null)],
   [/^\/clientes\/(\d+)$/, (m) => telaClientesDetalhe(m[1])],
@@ -10,6 +10,7 @@ const rotas = [
   [/^\/tecnicos\/(\d+)\/editar$/, (m) => telaTecnicos(m[1])],
   [/^\/chamados$/, (m, params) => telaChamadosLista(params)],
   [/^\/chamados\/novo$/, (m, params) => telaChamadosNovo(params)],
+  [/^\/chamados\/(\d+)$/, (m) => telaChamadoDetalhe(m[1])],
 ];
 
 async function navegar() {
@@ -35,7 +36,7 @@ async function navegar() {
       return;
     }
   }
-  app.innerHTML = '<div class="card vazio">Tela ainda não implementada.</div>';
+  app.innerHTML = '<div class="card vazio">Página não encontrada.</div>';
 }
 
 window.addEventListener("hashchange", navegar);

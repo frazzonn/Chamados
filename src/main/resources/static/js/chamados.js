@@ -173,3 +173,119 @@ async function telaChamadosNovo(params) {
       }
     });
 }
+
+async function telaChamadoDetalhe(id) {
+  const [c, comentarios, tecnicos] = await Promise.all([
+    api(`/chamados/${id}`),
+    api(`/chamados/${id}/comentarios`),
+    api("/tecnicos"),
+  ]);
+  const fechado = c.status === "FECHADO";
+  const outrosStatus = STATUS.filter((s) => s !== c.status);
+
+  app.innerHTML = `
+    <div class="cabecalho">
+      <h1>#${c.id} · ${esc(c.titulo)}</h1>
+      <a class="botao" href="#/chamados">Voltar</a>
+    </div>
+    <div class="grade-2">
+      <div class="card">
+        <dl class="dados">
+          <dt>Status</dt><dd>${seloStatus(c.status)}</dd>
+          <dt>Prioridade</dt><dd>${seloPrioridade(c.prioridade)}</dd>
+          <dt>Cliente</dt><dd><a href="#/clientes/${c.clienteId}">${esc(c.clienteNome)}</a></dd>
+          <dt>Categoria</dt><dd>${esc(c.categoriaNome)}</dd>
+          <dt>Técnico</dt><dd>${esc(c.tecnicoNome) || "—"}</dd>
+          <dt>Abertura</dt><dd>${dataHora(c.dataAbertura)}</dd>
+          <dt>Fechamento</dt><dd>${dataHora(c.dataFechamento)}</dd>
+        </dl>
+        <h2 style="margin-top:16px">Descrição</h2>
+        <p class="descricao">${esc(c.descricao)}</p>
+      </div>
+      <div>
+        ${
+          fechado
+            ? '<div class="card vazio">Chamado fechado: status e técnico não podem mais ser alterados.</div>'
+            : `
+        <form class="card" id="form-status">
+          <h2>Alterar status</h2>
+          <div class="filtros">
+            <label>Novo status
+              <select name="status" required>${opcoes(outrosStatus.map((s) => ({ valor: s, texto: rotulo(s) })), "")}</select>
+            </label>
+            <button class="primario" type="submit">Alterar</button>
+          </div>
+        </form>
+        <form class="card" id="form-tecnico">
+          <h2>Atribuir técnico</h2>
+          <div class="filtros">
+            <label>Técnico
+              <select name="tecnicoId" required>${opcoes(tecnicos.map((t) => ({ valor: t.id, texto: t.nome })), c.tecnicoId, "Selecione")}</select>
+            </label>
+            <button class="primario" type="submit">Atribuir</button>
+          </div>
+        </form>`
+        }
+      </div>
+    </div>
+    <div class="card">
+      <h2>Comentários</h2>
+      ${
+        comentarios.length === 0
+          ? '<p class="vazio">Nenhum comentário ainda.</p>'
+          : comentarios
+              .map(
+                (m) => `
+        <div class="comentario">
+          <div class="meta">${esc(m.autor)} · ${dataHora(m.data)}</div>
+          <div class="descricao">${esc(m.texto)}</div>
+        </div>`,
+              )
+              .join("")
+      }
+      <form id="form-comentario" style="margin-top:16px">
+        <div class="campos">
+          <label>Autor *<input name="autor" required maxlength="100"></label>
+          <label class="largo">Comentário *<textarea name="texto" required maxlength="1000"></textarea></label>
+        </div>
+        <div class="linha-botoes">
+          <button class="primario" type="submit">Comentar</button>
+        </div>
+      </form>
+    </div>`;
+
+  const enviar = (seletor, montar) => {
+    const form = document.getElementById(seletor);
+    if (!form) return;
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      try {
+        const [caminho, metodo, corpo, msg] = montar(dadosDoForm(ev.target));
+        await api(caminho, { method: metodo, body: corpo });
+        avisar(msg);
+        telaChamadoDetalhe(id);
+      } catch (e) {
+        avisar(e.message, true);
+      }
+    });
+  };
+
+  enviar("form-status", (d) => [
+    `/chamados/${id}/status`,
+    "PATCH",
+    { status: d.status },
+    "Status alterado.",
+  ]);
+  enviar("form-tecnico", (d) => [
+    `/chamados/${id}/atribuir`,
+    "PATCH",
+    { tecnicoId: Number(d.tecnicoId) },
+    "Técnico atribuído.",
+  ]);
+  enviar("form-comentario", (d) => [
+    `/chamados/${id}/comentarios`,
+    "POST",
+    d,
+    "Comentário adicionado.",
+  ]);
+}
